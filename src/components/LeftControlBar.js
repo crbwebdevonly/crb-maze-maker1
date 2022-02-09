@@ -30,24 +30,19 @@ const LeftControlBar = () => {
 		moveALL,
 		showCorrectPath,
 		drawWalls,
+          toggleShowIndex
 	} = useMyContext();
 
 	// ==========================
-	const [continueGo, setContinueGo] = useState(false);
 	// ==========================
 	useEffect(() => {
 		//   first;
 		let myInterval;
 		if (run && !allVisited) {
-			// if (run && !allVisited) {
 			myInterval = setInterval(() => {
-				// move();
 				moveALL();
 			}, 0);
 		}
-		// while (run) {
-		// moveNext();
-		// }
 
 		return () => {
 			//     second;
@@ -58,7 +53,6 @@ const LeftControlBar = () => {
 	// ==========================
 
 	// ==========================
-	// console.log(test1, loading, error);
 	// ==========================
 	// ==========================
 	// ==========================
@@ -68,15 +62,19 @@ const LeftControlBar = () => {
 	// ==========================
 	return (
 		<Wrapper>
-			leftbar
-			<button onClick={move}> move</button>
-			<button onClick={moveALL}> moveALL</button>
-			<button onClick={moveForward}> moveForward</button>
+			{/* <button onClick={move}> move</button> */}
+			{/* <button onClick={moveALL}> moveALL</button> */}
+			{/* <button onClick={moveForward}> moveForward</button> */}
 			<button onClick={() => setRun()}> run </button>{" "}
-			{run ? "on" : "off"}
+			{run ? "run-on" : "run-off"}
 			<button onClick={reset}>reset</button>
-			<button onClick={showCorrectPath}>show correct path</button>
-			<button onClick={drawWalls}>draw walls</button>
+			<button onClick={showCorrectPath} disabled={!allVisited}>
+				show correct path
+			</button>
+			<button onClick={drawWalls} disabled={!allVisited}>
+				draw walls
+			</button>
+			<button onClick={toggleShowIndex}>show Index</button>
 		</Wrapper>
 	);
 };
@@ -85,5 +83,18 @@ const Wrapper = styled.div`
 	border: 1px solid red;
 	display: flex;
 	flex-direction: column;
+
+	button {
+		padding: 10px;
+		background-color: rgba(120, 137, 36, 0.6);
+		font-size: 1.2rem;
+
+		&:hover {
+			filter: brightness(0.7);
+		}
+		&:disabled {
+			cursor: not-allowed;
+		}
+	}
 `;
 export default LeftControlBar;

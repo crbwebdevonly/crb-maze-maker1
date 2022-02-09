@@ -7,19 +7,16 @@ const SquareItem = (props) => {
 		props;
 	// console.log(props);
 	// console.log(startIndex, "each start");
-	const { numX, numY, drawCorrectPath } = useMyContext();
+	const { numX, numY, drawCorrectPath, allVisited, showIndex } =
+		useMyContext();
 	const rightWall = startIndex;
 	const bottomWall = startIndex;
-	// let square = [];
-	// for (let i = 0; i < numX; i++) {
-	// 	square.push(<li>{i}</li>);
-	// }
 
 	const handleClick = () => {
 		console.log(index);
 	};
 	const getBGColor = () => {
-		let color = "rgba(0, 0, 0, 0.3)";
+		let color = "rgba(20, 20, 30, 0.6)";
 
 		if (isPath && drawCorrectPath && (!isStart || !isEnd))
 			return (color = "yellow");
@@ -40,7 +37,7 @@ const SquareItem = (props) => {
 			color={getBGColor()}
 			{...props}
 		>
-			{index}
+			{showIndex ? "" : index}
 		</Wrapper>
 	);
 };

@@ -9,6 +9,7 @@ import {
 	SET_FORWARD_AVAILABLE,
 	SET_OPEN_NEIGHBOURS,
 	SHOW_CORRECT_PATH,
+	SHOW_INDEX,
 	STOP,
 	TOGGLE_RUN,
 } from "./actions";
@@ -39,7 +40,10 @@ export const myReducer = (state, action) => {
 	if (action.type === STOP) {
 		return { ...action.payload };
 	}
-     if (action.type === MARK_END) {
+	if (action.type === SHOW_INDEX) {
+		return { ...state, showIndex: !state.showIndex };
+	}
+	if (action.type === MARK_END) {
 		return { ...action.payload };
 	}
 	if (action.type === SET_ALL_VISITED) {
@@ -144,7 +148,7 @@ export const myReducer = (state, action) => {
 				Math.random() * notVisitedNeighbours.length
 			);
 			nextIndex = notVisitedNeighbours[nextIndex];
-			console.log("moving from", currentIndex, "to", nextIndex);
+			// console.log("moving from", currentIndex, "to", nextIndex);
 			const updatedSquaresArray = allSquaresArray.map((e, i) => {
 				if (i === currentIndex) {
 					e.isVisited = true;
@@ -175,7 +179,7 @@ export const myReducer = (state, action) => {
 		//============
 		let updatedPath = [...state.travelledPathIndex];
 		let lastMove = updatedPath.pop();
-		console.log(lastMove, "lastMove");
+		// console.log(lastMove, "lastMove");
 		const nextIndex = lastMove.from;
 		const updatedSquaresArray = state.allSquaresArray.map((e, i) => {
 			if (i === state.currentIndex) {

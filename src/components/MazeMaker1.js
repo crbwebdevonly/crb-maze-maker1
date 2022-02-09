@@ -8,8 +8,8 @@ import SquareItem from "./SquareItem";
 const MazeMaker1 = () => {
 	return (
 		<Wrapper>
-			MazeMaker1
-			<Navbar />
+			{/* MazeMaker1 */}
+			{/* <Navbar /> */}
 			<div className="main">
 				<div className="left">
 					<LeftControlBar />
