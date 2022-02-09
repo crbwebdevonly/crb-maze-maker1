@@ -1,0 +1,13 @@
+{
+  "files": {
+    "main.css": "/crb-maze-maker1/static/css/main.1a8a0596.css",
+    "main.js": "/crb-maze-maker1/static/js/main.eb1dbf79.js",
+    "index.html": "/crb-maze-maker1/index.html",
+    "main.1a8a0596.css.map": "/crb-maze-maker1/static/css/main.1a8a0596.css.map",
+    "main.eb1dbf79.js.map": "/crb-maze-maker1/static/js/main.eb1dbf79.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.1a8a0596.css",
+    "static/js/main.eb1dbf79.js"
+  ]
+}
