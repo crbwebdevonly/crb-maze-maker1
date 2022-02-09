@@ -1,13 +1,13 @@
 {
   "files": {
     "main.css": "/crb-maze-maker1/static/css/main.1a8a0596.css",
-    "main.js": "/crb-maze-maker1/static/js/main.eb1dbf79.js",
+    "main.js": "/crb-maze-maker1/static/js/main.43cb9ea3.js",
     "index.html": "/crb-maze-maker1/index.html",
     "main.1a8a0596.css.map": "/crb-maze-maker1/static/css/main.1a8a0596.css.map",
-    "main.eb1dbf79.js.map": "/crb-maze-maker1/static/js/main.eb1dbf79.js.map"
+    "main.43cb9ea3.js.map": "/crb-maze-maker1/static/js/main.43cb9ea3.js.map"
   },
   "entrypoints": [
     "static/css/main.1a8a0596.css",
-    "static/js/main.eb1dbf79.js"
+    "static/js/main.43cb9ea3.js"
   ]
 }
