@@ -1,0 +1,468 @@
+import { createContext, useContext, useReducer, useState } from "react";
+import { myReducer } from "./reducer";
+
+const MyContext = createContext();
+
+const generateInitialSquaresArray = () => {
+	let out = Array.from({ length: 600 }, (e, i) => ({
+		index: i,
+		isVisited: false,
+		isCurrent: false,
+		isStart: false,
+		isEnd: false,
+		isPath: false,
+		allNeighboursIndex: [],
+		openNeighboursIndex: [],
+		hasWalls: {},
+	}));
+
+	out[0].isStart = true;
+	out[out.length - 1].isEnd = true;
+
+	//fill all neighbours
+	out = out.map((e2, i2) => {
+		const n = 20;
+		const max = out.length;
+		// top
+		const top = i2 - n;
+		if (top > -1) {
+			e2.allNeighboursIndex.push(top);
+		}
+		const right = i2 + 1;
+		if (right < max && right % n !== 0) {
+			e2.allNeighboursIndex.push(right);
+		}
+		const left = i2 - 1;
+		if (left > -1 && (left + 1) % 20 !== 0) {
+			e2.allNeighboursIndex.push(left);
+		}
+		const down = i2 + n;
+		if (down < max) {
+			e2.allNeighboursIndex.push(down);
+		}
+		return e2;
+	});
+
+	return out;
+};
+
+// const allSquaresArray = generateInitialSquaresArray();
+
+// console.log(generateInitialSquaresArray());
+
+const startIndex = 0;
+const endIndex = 299;
+
+const getInitialState = () => {
+	let initialState = {
+		allVisited: false,
+		run: false,
+		loading: false,
+		error: false,
+		drawCorrectPath: false,
+		numX: 20,
+		numY: 20,
+		startIndex,
+		currentIndex: startIndex,
+		travelledPathIndex: [],
+		allSquaresArray: generateInitialSquaresArray(),
+	};
+	return initialState;
+};
+
+export const MyContextProvider = ({ children }) => {
+	// ==========================
+	// const [state, dispatch] = useReducer(myReducer, initialState)
+	// ==========================
+	const [myState, setMyState] = useState(getInitialState());
+	// ==========================
+	// ==========================
+	const updateAllVisited = () => {
+		setMyState((prev) => {
+			const newAllVisited = prev.allSquaresArray.find(
+				(e) => !e.isVisited
+			);
+			if (!newAllVisited) {
+				console.log("end All visited");
+				return { ...prev, run: false };
+			} else return prev;
+		});
+	};
+	// ==========================
+	// ==========================
+	const moveBack = () => {
+		setMyState((prev) => {
+			const { currentIndex } = prev;
+			if (prev.travelledPathIndex.length < 1) {
+				console.log(
+					"travellength =",
+					prev.travelledPathIndex.length
+				);
+				console.log("move back END..nothing avilable to moveback");
+				// setRun(false);
+				return { ...prev, run: false };
+			}
+			let updatedPath = [...prev.travelledPathIndex];
+			let lastMove = updatedPath.pop();
+			console.log(lastMove, "lastMove");
+			const nextIndex = lastMove.from;
+			const updatedSquaresArray = prev.allSquaresArray.map((e, i) => {
+				e.isCurrent = false;
+				if (i === nextIndex) {
+					e.isCurrent = true;
+				}
+				if (i === currentIndex) {
+					e.isVisited = true;
+				}
+
+				return e;
+			});
+			return {
+				...prev,
+				currentIndex: nextIndex,
+				travelledPathIndex: [...updatedPath],
+				allSquaresArray: updatedSquaresArray,
+			};
+		});
+	};
+	// ==========================
+	// ==========================
+	// ==========================
+	// ==========================
+	const moveForward = () => {
+		setMyState((prev) => {
+			const { currentIndex } = prev;
+
+			const { allNeighboursIndex } =
+				prev.allSquaresArray[currentIndex];
+			//
+			const notVisitedNeighbours = allNeighboursIndex.filter(
+				(e) => !prev.allSquaresArray[e].isVisited
+			);
+			console.log(notVisitedNeighbours, "not visited");
+			if (notVisitedNeighbours.length < 1) {
+				console.log("move back");
+				moveBack();
+				if (prev.travelledPathIndex.length < 1) {
+					console.log(
+						"travellength =",
+						prev.travelledPathIndex.length
+					);
+					console.log("move back END");
+					// setRun(false);
+					return { ...prev, run: false };
+				}
+				let updatedPath = [...prev.travelledPathIndex];
+				let lastMove = updatedPath.pop();
+				console.log(lastMove, "lastMove");
+				const nextIndex = lastMove.from;
+				const updatedSquaresArray = prev.allSquaresArray.map(
+					(e, i) => {
+						if (i === currentIndex) {
+							e.isVisited = true;
+						}
+						if (i === nextIndex) {
+							e.isCurrent = true;
+						} else e.isCurrent = false;
+						return e;
+					}
+				);
+				return {
+					...prev,
+					currentIndex: nextIndex,
+					travelledPathIndex: [...updatedPath],
+					allSquaresArray: updatedSquaresArray,
+				};
+			}
+			//
+			let nextIndex = Math.floor(
+				Math.random() * notVisitedNeighbours.length
+			);
+			nextIndex = notVisitedNeighbours[nextIndex];
+			console.log("currentIndex is ", currentIndex);
+			console.log("moving from", currentIndex, "to", nextIndex);
+			// console.log(currentIndex, nextIndex, allNeighboursIndex, "kk");
+			const updatedSquaresArray = prev.allSquaresArray.map((e, i) => {
+				if (i === currentIndex) {
+					e.isVisited = true;
+				}
+				if (i === nextIndex) {
+					e.isCurrent = true;
+				} else e.isCurrent = false;
+				return e;
+			});
+			//
+			let updatedPath = [...prev.travelledPathIndex];
+			updatedPath.push({ from: currentIndex, to: nextIndex });
+			//
+			return {
+				...prev,
+				currentIndex: nextIndex,
+				travelledPathIndex: [...updatedPath],
+				allSquaresArray: updatedSquaresArray,
+			};
+		});
+	};
+	// ==========================
+	// ==========================
+	// ==========================
+	// ==========================
+	// ==========================
+	// ==========================
+	// ==========================
+	const moveNext0 = () => {
+		const { currentIndex } = myState;
+		const { allNeighboursIndex } = myState.allSquaresArray[currentIndex];
+		let nextIndex = Math.floor(Math.random() * allNeighboursIndex.length);
+		nextIndex = allNeighboursIndex[nextIndex];
+		console.log("currentIndex is ", currentIndex);
+		console.log("moving from", currentIndex, "to", nextIndex);
+		console.log(currentIndex, nextIndex, allNeighboursIndex, "kk");
+		const updatedSquaresArray = myState.allSquaresArray.map((e, i) => {
+			if (i === currentIndex) {
+				e.isVisited = true;
+			}
+			if (i === nextIndex) {
+				e.isCurrent = true;
+			} else e.isCurrent = false;
+			return e;
+		});
+
+		setMyState({
+			...myState,
+			currentIndex: nextIndex,
+
+			allSquaresArray: updatedSquaresArray,
+		});
+		// while (myState.currentIndex !== myState.endIndex) {
+		// 	moveNext();
+		// }
+	};
+	const moveNext = () => {
+		setMyState((prev) => {
+			const { currentIndex } = prev;
+			
+			// const newAllVisited = prev.allSquaresArray.find(
+			// 	(e) => !e.isVisited
+			// );
+			// if (!newAllVisited) {
+			// 	console.log("end All visited");
+			// 	return { ...prev, run: false };
+			// }
+			// console.log(newAllVisited, "newallviisted");
+			const { allNeighboursIndex } =
+				prev.allSquaresArray[currentIndex];
+			//
+			const notVisitedNeighbours = allNeighboursIndex.filter(
+				(e) => !prev.allSquaresArray[e].isVisited
+			);
+			console.log(notVisitedNeighbours, "not visited");
+			if (notVisitedNeighbours.length < 1) {
+				console.log("move back");
+				if (prev.travelledPathIndex.length < 1) {
+					console.log(
+						"travellength =",
+						prev.travelledPathIndex.length
+					);
+					console.log("move back END");
+					// setRun(false);
+					return { ...prev, run: false };
+				}
+				let updatedPath = [...prev.travelledPathIndex];
+				let lastMove = updatedPath.pop();
+				console.log(lastMove, "lastMove");
+				const nextIndex = lastMove.from;
+				const updatedSquaresArray = prev.allSquaresArray.map(
+					(e, i) => {
+						if (i === currentIndex) {
+							e.isVisited = true;
+						}
+						if (i === nextIndex) {
+							e.isCurrent = true;
+						} else e.isCurrent = false;
+						return e;
+					}
+				);
+				return {
+					...prev,
+					currentIndex: nextIndex,
+					travelledPathIndex: [...updatedPath],
+					allSquaresArray: updatedSquaresArray,
+				};
+			}
+			//
+			let nextIndex = Math.floor(
+				Math.random() * notVisitedNeighbours.length
+			);
+			nextIndex = notVisitedNeighbours[nextIndex];
+			console.log("currentIndex is ", currentIndex);
+			console.log("moving from", currentIndex, "to", nextIndex);
+			// console.log(currentIndex, nextIndex, allNeighboursIndex, "kk");
+			const updatedSquaresArray = prev.allSquaresArray.map((e, i) => {
+				if (i === currentIndex) {
+					e.isVisited = true;
+				}
+				if (i === nextIndex) {
+					e.isCurrent = true;
+				} else e.isCurrent = false;
+				return e;
+			});
+			//
+			let updatedPath = [...prev.travelledPathIndex];
+			updatedPath.push({ from: currentIndex, to: nextIndex });
+			//
+			return {
+				...prev,
+				currentIndex: nextIndex,
+				travelledPathIndex: [...updatedPath],
+				allSquaresArray: updatedSquaresArray,
+			};
+		});
+	};
+	// ==========================
+	// ==========================
+     const moveNext_WORKING = () => {
+		setMyState((prev) => {
+			console.log("travellength =", prev.travelledPathIndex.length);
+			const { currentIndex } = prev;
+			// if (prev.allSquaresArray[currentIndex].isEnd) {
+			// 	console.log("end 299 reached");
+			// 	return { ...prev, run: false };
+			// }
+			const newAllVisited = prev.allSquaresArray.find(
+				(e) => !e.isVisited
+			);
+			if (!newAllVisited) {
+				console.log("end All visited");
+				return { ...prev, run: false };
+			}
+			console.log(newAllVisited, "newallviisted");
+			const { allNeighboursIndex } =
+				prev.allSquaresArray[currentIndex];
+			//
+			const notVisitedNeighbours = allNeighboursIndex.filter(
+				(e) => !prev.allSquaresArray[e].isVisited
+			);
+			console.log(notVisitedNeighbours, "not visited");
+			if (notVisitedNeighbours.length < 1) {
+				console.log("move back");
+				if (prev.travelledPathIndex.length < 1) {
+					console.log(
+						"travellength =",
+						prev.travelledPathIndex.length
+					);
+					console.log("move back END");
+					// setRun(false);
+					return { ...prev, run: false };
+				}
+				let updatedPath = [...prev.travelledPathIndex];
+				let lastMove = updatedPath.pop();
+				console.log(lastMove, "lastMove");
+				const nextIndex = lastMove.from;
+				const updatedSquaresArray = prev.allSquaresArray.map(
+					(e, i) => {
+						if (i === currentIndex) {
+							e.isVisited = true;
+						}
+						if (i === nextIndex) {
+							e.isCurrent = true;
+						} else e.isCurrent = false;
+						return e;
+					}
+				);
+				return {
+					...prev,
+					currentIndex: nextIndex,
+					travelledPathIndex: [...updatedPath],
+					allSquaresArray: updatedSquaresArray,
+				};
+			}
+			//
+			let nextIndex = Math.floor(
+				Math.random() * notVisitedNeighbours.length
+			);
+			nextIndex = notVisitedNeighbours[nextIndex];
+			console.log("currentIndex is ", currentIndex);
+			console.log("moving from", currentIndex, "to", nextIndex);
+			// console.log(currentIndex, nextIndex, allNeighboursIndex, "kk");
+			const updatedSquaresArray = prev.allSquaresArray.map((e, i) => {
+				if (i === currentIndex) {
+					e.isVisited = true;
+				}
+				if (i === nextIndex) {
+					e.isCurrent = true;
+				} else e.isCurrent = false;
+				return e;
+			});
+			//
+			let updatedPath = [...prev.travelledPathIndex];
+			updatedPath.push({ from: currentIndex, to: nextIndex });
+			//
+			return {
+				...prev,
+				currentIndex: nextIndex,
+				travelledPathIndex: [...updatedPath],
+				allSquaresArray: updatedSquaresArray,
+			};
+		});
+	};
+	// ==========================
+	// ==========================
+	const reset = () => {
+		console.log("reset");
+		setMyState({
+			...getInitialState(),
+			// ...initialState,
+			// allSquaresArray: generateInitialSquaresArray(),
+		});
+	};
+	const setRun = (value) => {
+		setMyState({ ...myState, run: value });
+	};
+	const doDrawCorrectPath = () => {
+		setMyState((prev) => {
+			let updatedSquaresArray = [...prev.allSquaresArray];
+			prev.travelledPathIndex.forEach((e) => {
+				updatedSquaresArray[e.from].isPath = true;
+				updatedSquaresArray[e.to].isPath = true;
+			});
+
+			return {
+				...prev,
+				allSquaresArray: updatedSquaresArray,
+				drawCorrectPath: !prev.drawCorrectPath,
+			};
+		});
+	};
+	// ==========================
+	// ==========================
+	// ==========================
+	// ==========================
+	// ==========================
+	// ==========================
+	// ==========================
+	// ==========================
+	// ==========================
+	// ==========================
+	// ==========================
+	const contextValues = {
+		...myState,
+		moveNext,
+		reset,
+		setRun,
+		doDrawCorrectPath,
+	};
+	// ==========================
+	// ==========================
+	return (
+		<MyContext.Provider value={contextValues}>
+			{children}
+		</MyContext.Provider>
+	);
+};
+// ==========================
+// ==========================
+// ==========================
+export const useMyContext = () => {
+	return useContext(MyContext);
+};

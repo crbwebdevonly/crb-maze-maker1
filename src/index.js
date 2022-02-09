@@ -3,11 +3,14 @@ import ReactDOM from "react-dom";
 import App from "./App";
 
 import "bootstrap/dist/css/bootstrap.min.css";
+import { MyContextProvider } from "./context/context";
 
 ReactDOM.render(
-	<React.StrictMode>
+	// <React.StrictMode>
+	<MyContextProvider>
 		<App />
-	</React.StrictMode>,
+	</MyContextProvider>,
+	// </React.StrictMode>
 	document.getElementById("root")
 );
 
