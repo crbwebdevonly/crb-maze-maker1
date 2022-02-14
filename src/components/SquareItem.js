@@ -53,7 +53,7 @@ const Wrapper = styled.div`
 		content: "";
 		top: 0;
 		left: 100%;
-		width: 3px;
+		width: 05px;
 		height: 100%;
 		background-color: white;
 		background-color: ${(props) =>
@@ -66,7 +66,7 @@ const Wrapper = styled.div`
 		top: 100%;
 		left: 0%;
 		width: 100%;
-		height: 3px;
+		height: 5px;
 		background-color: rgba(0, 0, 0, 0.8);
 		background-color: white;
 		background-color: ${(props) =>

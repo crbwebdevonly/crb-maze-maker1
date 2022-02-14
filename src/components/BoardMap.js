@@ -24,7 +24,7 @@ const BoardMap = ({ gap = "10px" }) => {
 const Wrapper = styled.div`
 	.grid-container {
 		display: grid;
-		gap: 1px;
+		gap: 5px;
 		grid-template-columns: repeat(20, 1fr);
 		width: max-content;
 		padding: 10px;
